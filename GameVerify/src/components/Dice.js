@@ -16,9 +16,11 @@ export default {
         activeTab: 'dice',
         editDicePublicKey: '',
         editDiceVerifyDatas: '',
+        editDicePublicKeyModulus:'',
+        editDicePublicKeyExponent:''
     }),
     mounted(){
-        this.editDicePublicKey = CodeMirror.fromTextArea(this.$refs.dicePublicKeyModulus, {
+        this.editDicePublicKeyModulus = CodeMirror.fromTextArea(this.$refs.dicePublicKeyModulus, {
             mode:'javascript',
             theme:'mdn-like',
             showCursorWhenSelecting: true,
@@ -28,7 +30,7 @@ export default {
             smartIndent: true,
         });
 
-        this.editDicePublicKey = CodeMirror.fromTextArea(this.$refs.dicePublicKeyExponent, {
+        this.editDicePublicKeyExponent = CodeMirror.fromTextArea(this.$refs.dicePublicKeyExponent, {
             mode:'javascript',
             theme:'mdn-like',
             showCursorWhenSelecting: true,
@@ -142,17 +144,13 @@ export default {
         },
 
         generatePublickey() {
-            var modulus = '9CD00B8A47F449F9451BF8665909F597187925E10272AE96006175DC0C747EBEE3AFE42BAE37332536BF614FD01AB1F0DC5B2E6B0CE8D743B1DBB991F13E9573D9C561471BC4F9BC6F06ACBF7B7F9B448F23A306D31F93BF534EC7A5F908C499619EA37E4C3D8B9E8B9AA314639F0CA813837AC3B7B0768BF2D1D294835AAA4B'
+            let modulus =  this.editDicePublicKeyModulus.getValue().trim();
+            let exponent = this.editDicePublicKeyExponent.getValue().trim();
 
-            var exponent = '10001'
+            let publicKey = forge.pki.rsa.setPublicKey(modulus, exponent);
+            let pemPublicKey = forge.pki.publicKeyToPem(publicKey);
 
-            var publicKey = forge.pki.rsa.setPublicKey(modulus, exponent);
-            var pemPublic = forge.pki.publicKeyToPem(publicKey);
-
-            console.log('pub,pem',pemPublic);
-
-            this.editDicePublicKey.setValue(pemPublic);
-
+            this.editDicePublicKey.setValue(pemPublicKey);
         },
         clickToVerify(){
             let verifyResult = this.$refs.diceVerifyResult;
