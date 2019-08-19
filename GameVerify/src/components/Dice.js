@@ -8,6 +8,8 @@ import 'codemirror/mode/javascript/javascript'
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/mdn-like.css'
 
+import forge from 'node-forge';
+
 export default {
     name: "diceVerify",
     data: ()=>({
@@ -16,6 +18,26 @@ export default {
         editDiceVerifyDatas: '',
     }),
     mounted(){
+        this.editDicePublicKey = CodeMirror.fromTextArea(this.$refs.dicePublicKeyModulus, {
+            mode:'javascript',
+            theme:'mdn-like',
+            showCursorWhenSelecting: true,
+            cursorHeight: 1,
+            lineWrapping: true,
+            matchBrackets: true,
+            smartIndent: true,
+        });
+
+        this.editDicePublicKey = CodeMirror.fromTextArea(this.$refs.dicePublicKeyExponent, {
+            mode:'javascript',
+            theme:'mdn-like',
+            showCursorWhenSelecting: true,
+            cursorHeight: 1,
+            lineWrapping: true,
+            matchBrackets: true,
+            smartIndent: true,
+        });
+
         this.editDicePublicKey = CodeMirror.fromTextArea(this.$refs.diceVerifyPublicKey, {
             mode:'javascript',
             theme:'mdn-like',
@@ -40,7 +62,8 @@ export default {
         });
 
 
-        let editorWrap = document.getElementsByClassName("CodeMirror")[1];
+        let editorWrap = document.getElementsByClassName("CodeMirror")[3],
+            editorWrap_publickey = document.getElementsByClassName("CodeMirror")[2];
         this.editDiceVerifyDatas.setValue('Please click the "CopyData" button from Dice Verify page to copy the data then paste here. Just like:\n{\n' +
             ' "WalletAddress":"TBK4YeBdYjAXgbskWE1XxPXngD9XuVh4RK",\n' +
             ' "Seed":43,\n' +
@@ -61,6 +84,13 @@ export default {
                 this.editDiceVerifyDatas.setValue('');
             }
         };
+
+        editorWrap_publickey.onclick = ()=>{
+            if (this.editDicePublicKey.getValue()==="You can click the button 'Generate PublicKey' to get publickey or copy from the verify page in the game."){
+                this.editDicePublicKey.setValue('');
+            }
+        };
+
     },
     methods: {
 
@@ -110,15 +140,27 @@ export default {
                 return false;
             }
         },
+
+        generatePublickey() {
+            var modulus = '9CD00B8A47F449F9451BF8665909F597187925E10272AE96006175DC0C747EBEE3AFE42BAE37332536BF614FD01AB1F0DC5B2E6B0CE8D743B1DBB991F13E9573D9C561471BC4F9BC6F06ACBF7B7F9B448F23A306D31F93BF534EC7A5F908C499619EA37E4C3D8B9E8B9AA314639F0CA813837AC3B7B0768BF2D1D294835AAA4B'
+
+            var exponent = '10001'
+
+            var publicKey = forge.pki.rsa.setPublicKey(modulus, exponent);
+            var pemPublic = forge.pki.publicKeyToPem(publicKey);
+
+            console.log('pub,pem',pemPublic);
+
+            this.editDicePublicKey.setValue(pemPublic);
+
+        },
         clickToVerify(){
             let verifyResult = this.$refs.diceVerifyResult;
             verifyResult.innerText = '';
             let dealerPublicKey = this.editDicePublicKey.getValue();
 
-            //handle to avoid useless spaces in the publicKey content
-            if (dealerPublicKey) {
-                dealerPublicKey = `-----BEGIN PUBLIC KEY-----${dealerPublicKey.substring(26,dealerPublicKey.length-24).replace(/\s+/g,"")}-----END PUBLIC KEY-----`;
-            }
+
+
             let verifyDatas = {};
             try {
                 verifyDatas = JSON.parse(this.editDiceVerifyDatas.getValue());

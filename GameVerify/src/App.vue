@@ -159,6 +159,40 @@
             margin-top: -20px;
         }
 
+        h4 {
+            margin: 5px 0 -15px;
+            color: #d80927;
+        }
+
+        .modulus {
+            width: 100%;
+            height: 40px!important;
+        }
+
+        .exponent {
+            width: 100%;
+        }
+
+        .generate-btn {
+            margin-top: 10px;
+            padding: 10px;
+            background: #dd4630;
+            color: #fff;
+            font-size: 16px;
+            outline:none;
+            border:none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: .2s;
+            &:hover {
+                background-color: #cc4630;
+            }
+            &:active {
+                box-shadow: 0 4px #bebebe;
+                transform: translateY(4px);
+            }
+        }
+
         .public-key {
             width: 100%;
             height: 120px;
@@ -183,6 +217,16 @@
             margin-top: 20px;
             font-size: 14px;
             height: 220px;
+
+            &:nth-child(4){
+                height: 75px;
+            }
+            &:nth-child(7){
+                height: 25px;
+            }
+            &:nth-child(10){
+                height: 130px;
+            }
         }
 
         .verify-result {
